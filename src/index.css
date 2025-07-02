@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  background-color: white;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pulse animation for live indicator */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+/* Space data cube animations */
+@keyframes float-0 {
+  0%, 100% { transform: rotate(15deg) translateY(0px); }
+  50% { transform: rotate(15deg) translateY(-15px); }
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: rotate(-20deg) translateY(0px); }
+  50% { transform: rotate(-20deg) translateY(-12px); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: rotate(25deg) translateY(0px); }
+  50% { transform: rotate(25deg) translateY(-18px); }
+}
+
+@keyframes float-3 {
+  0%, 100% { transform: rotate(-15deg) translateY(0px); }
+  50% { transform: rotate(-15deg) translateY(-14px); }
+}
+
+/* Smooth transitions */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
