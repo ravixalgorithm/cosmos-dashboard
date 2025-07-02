@@ -15,7 +15,7 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
 
   const handleNavigation = (itemId) => {
     try {
-      console.log(`🧭 Mobile Navigation: ${activeSection} → ${itemId} (2025-07-02 19:05:46)`)
+      console.log(`🧭 Navigation: ${activeSection} → ${itemId} (2025-07-02 21:33:38)`)
 
       if (typeof setActiveSection !== 'function') {
         console.error('🚨 setActiveSection is not a function')
@@ -29,10 +29,10 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
 
       setActiveSection(itemId)
       setMobileMenuOpen(false) // Close mobile menu after navigation
-      console.log(`✅ Mobile Navigation successful: ${itemId}`)
+      console.log(`✅ Navigation successful: ${itemId}`)
 
     } catch (error) {
-      console.error('🚨 Mobile Navigation error:', error)
+      console.error('🚨 Navigation error:', error)
     }
   }
 
@@ -44,8 +44,17 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
       }
     }
 
+    const handleClickOutside = (e) => {
+      // Close menu if clicking outside of navigation elements
+      if (mobileMenuOpen && !e.target.closest('nav') && !e.target.closest('[data-menu-dropdown]')) {
+        setMobileMenuOpen(false)
+      }
+    }
+
     if (mobileMenuOpen) {
       document.addEventListener('keydown', handleEscape)
+      document.addEventListener('click', handleClickOutside)
+      document.addEventListener('touchstart', handleClickOutside)
       // Prevent body scroll when menu is open
       document.body.style.overflow = 'hidden'
     } else {
@@ -54,13 +63,15 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
 
     return () => {
       document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('touchstart', handleClickOutside)
       document.body.style.overflow = 'unset'
     }
   }, [mobileMenuOpen])
 
   return (
     <>
-      {/* Mobile Menu Overlay - Fixed z-index and pointer events */}
+      {/* Mobile Menu Overlay - SIMPLIFIED */}
       {mobileMenuOpen && (
         <div
           style={{
@@ -69,30 +80,26 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 9998, // Lower than navigation but higher than content
-            pointerEvents: 'auto'
+            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            zIndex: 9990,
+            touchAction: 'none'
           }}
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            setMobileMenuOpen(false)
-          }}
+          onClick={() => setMobileMenuOpen(false)}
+          onTouchStart={() => setMobileMenuOpen(false)}
         />
       )}
 
-      {/* Mobile Top Navigation - Higher z-index */}
+      {/* Mobile Top Navigation - FIXED z-index */}
       <nav style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         backgroundColor: 'white',
-        zIndex: 10000, // Highest z-index
+        zIndex: 9999,
         height: 'clamp(60px, 10vh, 70px)',
         borderBottom: '1px solid #e2e8f0',
-        userSelect: 'none',
-        pointerEvents: 'auto'
+        touchAction: 'manipulation'
       }}>
         <div style={{
           maxWidth: '1400px',
@@ -103,39 +110,30 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          {/* Logo */}
+          {/* Logo - SIMPLIFIED */}
           <div
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              handleNavigation('Home')
-            }}
+            onClick={() => handleNavigation('Home')}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: 'clamp(8px, 2vw, 12px)',
               cursor: 'pointer',
-              userSelect: 'none',
-              pointerEvents: 'auto',
-              zIndex: 10001
+              touchAction: 'manipulation'
             }}
           >
             <span style={{
               fontSize: 'clamp(20px, 5vw, 28px)',
               fontWeight: '900',
-              color: 'black',
-              pointerEvents: 'none'
+              color: 'black'
             }}>
               COSMOS
             </span>
           </div>
 
-          {/* Mobile Menu Button - Fixed pointer events */}
+          {/* Mobile Menu Button - SIMPLIFIED */}
           <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              console.log('🔘 Menu button clicked, current state:', mobileMenuOpen)
+            onClick={() => {
+              console.log('🔘 Menu toggle:', !mobileMenuOpen)
               setMobileMenuOpen(!mobileMenuOpen)
             }}
             style={{
@@ -150,172 +148,183 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
               fontSize: 'clamp(12px, 2.5vw, 14px)',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              userSelect: 'none',
-              outline: 'none',
-              pointerEvents: 'auto',
-              zIndex: 10001,
-              position: 'relative'
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              outline: 'none'
             }}
           >
-            <span style={{
-              fontSize: 'clamp(16px, 3.5vw, 20px)',
-              pointerEvents: 'none'
-            }}>
-              ☰
-            </span>
-            <span style={{ pointerEvents: 'none' }}>Menu</span>
+            <span style={{ fontSize: 'clamp(16px, 3.5vw, 20px)' }}>☰</span>
+            <span>Menu</span>
           </button>
         </div>
       </nav>
 
-      {/* Mobile Dropdown Menu - Fixed positioning and events */}
-      <div style={{
-        position: 'fixed',
-        top: 'clamp(60px, 10vh, 70px)',
-        left: 0,
-        right: 0,
-        backgroundColor: 'white',
-        borderBottom: '1px solid #e2e8f0',
-        zIndex: 9999, // High but lower than nav bar
-        transform: mobileMenuOpen ? 'translateY(0)' : 'translateY(-100%)',
-        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        maxHeight: 'calc(100vh - clamp(60px, 10vh, 70px))',
-        overflowY: 'auto',
-        boxShadow: mobileMenuOpen ? '0 8px 24px rgba(0, 0, 0, 0.15)' : 'none',
-        pointerEvents: mobileMenuOpen ? 'auto' : 'none',
-        opacity: mobileMenuOpen ? 1 : 0,
-        visibility: mobileMenuOpen ? 'visible' : 'hidden'
-      }}>
-        <div style={{
-          padding: 'clamp(16px, 4vw, 24px)',
-          maxWidth: '600px',
-          margin: '0 auto',
-          pointerEvents: 'auto'
-        }}>
-          {/* Mobile Navigation Items - Fixed click handling */}
+      {/* Mobile Dropdown Menu - COMPLETELY REWRITTEN */}
+      {mobileMenuOpen && (
+        <div
+          data-menu-dropdown="true"
+          style={{
+            position: 'fixed',
+            top: 'clamp(60px, 10vh, 70px)',
+            left: 0,
+            right: 0,
+            backgroundColor: 'white',
+            borderBottom: '1px solid #e2e8f0',
+            zIndex: 9998,
+            maxHeight: 'calc(100vh - clamp(60px, 10vh, 70px))',
+            overflowY: 'auto',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+            touchAction: 'manipulation'
+          }}
+        >
           <div style={{
-            display: 'grid',
-            gap: 'clamp(8px, 2vw, 12px)'
+            padding: 'clamp(16px, 4vw, 24px)',
+            maxWidth: '600px',
+            margin: '0 auto'
           }}>
-            {navigationItems.map((item, index) => {
-              if (item.type === 'divider') {
-                return (
-                  <div
-                    key={`divider-${index}`}
-                    style={{
-                      height: '1px',
-                      backgroundColor: '#e2e8f0',
-                      margin: 'clamp(8px, 2vw, 12px) 0'
-                    }}
-                  />
-                )
-              }
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    console.log(`🔘 Navigation item clicked: ${item.id}`)
-                    handleNavigation(item.id)
-                  }}
-                  onTouchStart={(e) => {
-                    e.stopPropagation()
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 'clamp(12px, 3vw, 16px)',
-                    padding: 'clamp(14px, 3.5vw, 18px)',
-                    backgroundColor: activeSection === item.id ? '#f1f5f9' : 'transparent',
-                    color: activeSection === item.id ? '#1f2937' : '#64748b',
-                    border: activeSection === item.id ? '2px solid #3b82f6' : '2px solid transparent',
-                    borderRadius: 'clamp(10px, 2.5vw, 14px)',
-                    fontSize: 'clamp(14px, 3vw, 16px)',
-                    fontWeight: activeSection === item.id ? '600' : '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    textAlign: 'left',
-                    width: '100%',
-                    userSelect: 'none',
-                    outline: 'none',
-                    WebkitTapHighlightColor: 'transparent',
-                    pointerEvents: 'auto',
-                    position: 'relative',
-                    zIndex: 10000,
-                    minHeight: '56px'
-                  }}
-                  onMouseDown={(e) => e.preventDefault()}
-                  onTouchEnd={(e) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                  }}
-                >
-                  <span style={{
-                    fontSize: 'clamp(20px, 4.5vw, 24px)',
-                    minWidth: 'clamp(28px, 6vw, 32px)',
-                    textAlign: 'center',
-                    pointerEvents: 'none'
-                  }}>
-                    {item.icon}
-                  </span>
-                  <span style={{
-                    flex: 1,
-                    pointerEvents: 'none'
-                  }}>
-                    {item.label}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Mobile Status - Fixed spacing */}
-          <div style={{
-            marginTop: 'clamp(20px, 5vw, 28px)',
-            padding: 'clamp(14px, 3.5vw, 18px)',
-            backgroundColor: '#f8fafc',
-            borderRadius: 'clamp(10px, 2.5vw, 14px)',
-            border: '1px solid #e2e8f0'
-          }}>
+            {/* Navigation Items - SIMPLIFIED EVENT HANDLING */}
             <div style={{
-              fontSize: 'clamp(11px, 2.2vw, 12px)',
-              color: '#64748b',
-              fontFamily: 'JetBrains Mono',
-              textAlign: 'center',
-              lineHeight: '1.6'
+              display: 'grid',
+              gap: 'clamp(8px, 2vw, 12px)'
             }}>
-              <div style={{ fontWeight: '700', marginBottom: '6px', color: '#1f2937' }}>
-                🚀 COSMOS Dashboard
-              </div>
-              <div>
-                Built by <strong style={{ color: '#3b82f6' }}>ravixalgorithm</strong>
+              {navigationItems.map((item, index) => {
+                if (item.type === 'divider') {
+                  return (
+                    <div
+                      key={`divider-${index}`}
+                      style={{
+                        height: '1px',
+                        backgroundColor: '#e2e8f0',
+                        margin: 'clamp(8px, 2vw, 12px) 0'
+                      }}
+                    />
+                  )
+                }
+
+                const isActive = activeSection === item.id
+
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      console.log(`🔘 Nav item clicked: ${item.id}`)
+                      handleNavigation(item.id)
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'clamp(12px, 3vw, 16px)',
+                      padding: 'clamp(16px, 4vw, 20px)',
+                      backgroundColor: isActive ? '#f1f5f9' : 'white',
+                      color: isActive ? '#1f2937' : '#64748b',
+                      border: isActive ? '2px solid #3b82f6' : '2px solid #e2e8f0',
+                      borderRadius: 'clamp(12px, 3vw, 16px)',
+                      fontSize: 'clamp(14px, 3vw, 16px)',
+                      fontWeight: isActive ? '600' : '500',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      width: '100%',
+                      minHeight: '60px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                      outline: 'none',
+                      // REMOVE ALL TRANSITIONS for better touch response
+                      transition: 'none'
+                    }}
+                  >
+                    <span style={{
+                      fontSize: 'clamp(20px, 4.5vw, 24px)',
+                      minWidth: 'clamp(28px, 6vw, 32px)',
+                      textAlign: 'center'
+                    }}>
+                      {item.icon}
+                    </span>
+                    <span style={{ flex: 1 }}>
+                      {item.label}
+                    </span>
+                    {isActive && (
+                      <span style={{
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#3b82f6',
+                        borderRadius: '50%'
+                      }} />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Status Section - SIMPLIFIED */}
+            <div style={{
+              marginTop: 'clamp(20px, 5vw, 28px)',
+              padding: 'clamp(16px, 4vw, 20px)',
+              backgroundColor: '#f8fafc',
+              borderRadius: 'clamp(12px, 3vw, 16px)',
+              border: '1px solid #e2e8f0',
+              textAlign: 'center'
+            }}>
+              <div style={{
+                fontSize: 'clamp(12px, 2.5vw, 14px)',
+                color: '#64748b',
+                fontFamily: "'JetBrains Mono', monospace",
+                lineHeight: '1.6'
+              }}>
+                <div style={{
+                  fontWeight: '700',
+                  marginBottom: '8px',
+                  color: '#1f2937',
+                  fontSize: 'clamp(13px, 2.8vw, 15px)'
+                }}>
+                  🚀 COSMOS Dashboard
+                </div>
+                <div>
+                  Active: <strong style={{ color: '#3b82f6' }}>{activeSection}</strong>
+                </div>
+                <div style={{ marginTop: '4px' }}>
+                  Built by <strong style={{ color: '#3b82f6' }}>ravixalgorithm</strong>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Global Styles - Enhanced for mobile */}
+      {/* Enhanced Global Styles - FIXED TOUCH ISSUES */}
       <style jsx>{`
-        nav * {
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
+        /* Remove all touch delays and highlights */
+        * {
+          -webkit-tap-highlight-color: transparent !important;
+          -webkit-touch-callout: none !important;
+          -webkit-user-select: none !important;
+          user-select: none !important;
         }
 
+        /* Ensure buttons are touchable */
         button {
-          -webkit-tap-highlight-color: transparent;
-          touch-action: manipulation;
+          touch-action: manipulation !important;
+          -webkit-appearance: none !important;
+          border: none !important;
+          outline: none !important;
         }
 
+        /* Prevent zoom on double tap */
+        nav {
+          touch-action: manipulation !important;
+        }
+
+        /* Prevent scroll when menu open */
         body.menu-open {
-          position: fixed;
-          width: 100%;
-          overflow: hidden;
+          position: fixed !important;
+          width: 100% !important;
+          overflow: hidden !important;
+        }
+
+        /* Fix iOS Safari touch issues */
+        @supports (-webkit-touch-callout: none) {
+          button {
+            cursor: pointer !important;
+          }
         }
       `}</style>
     </>
