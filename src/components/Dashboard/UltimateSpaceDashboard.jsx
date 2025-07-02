@@ -20,7 +20,7 @@ const UltimateSpaceDashboard = ({ activeSection, onFallback }) => {
       spaceData: !!spaceData,
       loading,
       activeSection,
-      timestamp: '2025-07-02 19:20:26',
+      timestamp: '2025-07-02 20:54:39',
       dataUpdateId: spaceData?.updateId
     })
   }, [spaceData?.updateId, loading, activeSection])
@@ -72,17 +72,16 @@ const UltimateSpaceDashboard = ({ activeSection, onFallback }) => {
       minHeight: '100vh',
       backgroundColor: '#f8fafc',
       paddingTop: window.innerWidth < 768
-        ? 'clamp(60px, 10vh, 70px)'   // Mobile: single nav height
-        : 'clamp(80px, 12vh, 90px)',  // Desktop: optimized for dual nav
+        ? 'clamp(60px, 10vh, 70px)'
+        : 'clamp(80px, 12vh, 90px)',
       padding: `${window.innerWidth < 768
         ? 'clamp(60px, 10vh, 70px)'
-        : 'clamp(80px, 12vh, 90px)'} clamp(8px, 2vw, 16px) clamp(16px, 4vw, 20px)`, // Reduced horizontal padding
+        : 'clamp(80px, 12vh, 90px)'} ${window.innerWidth < 768 ? '16px' : '32px'} ${window.innerWidth < 768 ? '20px' : '32px'}`,
       boxSizing: 'border-box',
-      width: '100%',
-      overflow: 'hidden' // Prevent horizontal scroll
+      width: '100%'
     }}>
       <div style={{
-        maxWidth: 'min(100vw, 1280px)', // Strict viewport width limit
+        maxWidth: window.innerWidth < 768 ? '100%' : '1400px',
         margin: '0 auto',
         width: '100%',
         boxSizing: 'border-box'
@@ -93,7 +92,7 @@ const UltimateSpaceDashboard = ({ activeSection, onFallback }) => {
   )
 }
 
-// Fixed Responsive Loading View
+// Fixed Loading View - NO ANIMATIONS
 const LoadingView = () => {
   return (
     <div key="cosmos-loader" style={{
@@ -109,8 +108,8 @@ const LoadingView = () => {
     }}>
       <div style={{
         fontSize: 'clamp(2.5rem, 8vw, 3.5rem)',
-        marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
-        animation: 'pulse 2s infinite'
+        marginBottom: 'clamp(1rem, 3vw, 1.5rem)'
+        // REMOVED: animation: 'pulse 2s infinite'
       }}>
         🚀
       </div>
@@ -119,7 +118,8 @@ const LoadingView = () => {
         fontWeight: '700',
         color: '#1f2937',
         marginBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)',
-        lineHeight: '1.2'
+        lineHeight: '1.2',
+        fontFamily: "'Inter', sans-serif"
       }}>
         Loading COSMOS Data...
       </h2>
@@ -127,31 +127,25 @@ const LoadingView = () => {
         fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
         color: '#64748b',
         marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
-        maxWidth: '90%'
+        maxWidth: '90%',
+        fontFamily: "'Inter', sans-serif"
       }}>
         Fetching real-time space information
       </p>
       <div style={{
         fontSize: 'clamp(0.625rem, 1.8vw, 0.75rem)',
         color: '#94a3b8',
-        fontFamily: 'monospace',
+        fontFamily: "'JetBrains Mono', monospace",
         textAlign: 'center',
         lineHeight: '1.4'
       }}>
-        ravixalgorithm • 2025-07-02 19:20:26 UTC
+        ravixalgorithm • 2025-07-02 20:54:39 UTC
       </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.05); }
-        }
-      `}</style>
     </div>
   )
 }
 
-// Fixed Responsive Main Enhanced View
+// Main Enhanced View - NO ANIMATIONS
 const MainEnhancedView = ({ spaceData, advancedData }) => {
   if (!spaceData) {
     console.error('🚨 MainEnhancedView: spaceData is null!')
@@ -173,46 +167,29 @@ const MainEnhancedView = ({ spaceData, advancedData }) => {
 
   console.log('✅ MainEnhancedView: Rendering with safe data and unique keys')
 
-  return (
-    <div key={`main-view-${spaceData.updateId}`} style={{
-      display: 'grid',
-      gridTemplateColumns: '1fr',
-      gap: 'clamp(12px, 3vw, 20px)',
-      width: '100%',
-      boxSizing: 'border-box'
-    }}>
-      {/* Top Row - Earth Tracker and Quick Stats - FIXED LAYOUT */}
-      <div style={{
+  // Mobile Layout
+  if (window.innerWidth < 768) {
+    return (
+      <div key={`main-view-mobile-${spaceData.updateId}`} style={{
         display: 'grid',
-        gridTemplateColumns: window.innerWidth < 768
-          ? '1fr'
-          : window.innerWidth < 1200
-            ? '1fr'
-            : '1.6fr 1fr', // Adjusted ratio for better fit
-        gap: 'clamp(12px, 3vw, 20px)',
+        gridTemplateColumns: '1fr',
+        gap: '20px',
         width: '100%',
         boxSizing: 'border-box'
       }}>
-        {/* Earth Tracker - Fixed container */}
-        <div key={`earth-tracker-${spaceData.updateId}`} style={{
-          width: '100%',
-          minWidth: 0, // Allow shrinking
-          boxSizing: 'border-box'
-        }}>
+        {/* Mobile: Earth Tracker */}
+        <div key={`earth-tracker-mobile-${spaceData.updateId}`}>
           <EarthTracker issData={safeAdvancedData.iss || safeSpaceData.iss} />
         </div>
 
-        {/* Quick Stats Column - Fixed sizing */}
-        <div key={`quick-stats-${spaceData.updateId}`} style={{
+        {/* Mobile: Quick Stats */}
+        <div key={`quick-stats-mobile-${spaceData.updateId}`} style={{
           display: 'grid',
-          gridTemplateColumns: window.innerWidth < 576 ? '1fr' : 'repeat(auto-fit, minmax(160px, 1fr))',
-          gap: 'clamp(8px, 2vw, 12px)',
-          width: '100%',
-          minWidth: 0,
-          boxSizing: 'border-box'
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px'
         }}>
           <QuickStatsCard
-            key={`iss-status-${spaceData.updateId}`}
+            key={`iss-status-mobile-${spaceData.updateId}`}
             title="ISS Status"
             icon="🛰️"
             value={safeAdvancedData.iss?.region || safeSpaceData.iss.location}
@@ -220,9 +197,8 @@ const MainEnhancedView = ({ spaceData, advancedData }) => {
             color="#3b82f6"
             size="compact"
           />
-
           <QuickStatsCard
-            key={`crew-count-${spaceData.updateId}`}
+            key={`crew-count-mobile-${spaceData.updateId}`}
             title="Crew"
             icon="👨‍🚀"
             value={safeSpaceData.peopleInSpace.count.toString()}
@@ -231,93 +207,180 @@ const MainEnhancedView = ({ spaceData, advancedData }) => {
             size="compact"
           />
         </div>
+
+        {/* Mobile: Live Charts */}
+        <div key={`charts-mobile-${spaceData.updateId}`}>
+          <LiveCharts
+            spaceData={safeSpaceData}
+            spaceWeather={safeAdvancedData.spaceWeather}
+          />
+        </div>
+
+        {/* Mobile: Data Cards */}
+        <div key={`data-cards-mobile-${spaceData.updateId}`} style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '12px'
+        }}>
+          <QuickStatsCard
+            key={`space-weather-mobile-${spaceData.updateId}`}
+            title="Space Weather"
+            icon="☀️"
+            value={safeAdvancedData.spaceWeather?.level || 'Quiet'}
+            subtitle={`${safeAdvancedData.spaceWeather?.auroraChance || 0}% Aurora • Kp ${safeAdvancedData.spaceWeather?.kpIndex || '0.0'}`}
+            color={safeAdvancedData.spaceWeather?.color || '#f59e0b'}
+            size="compact"
+          />
+          <QuickStatsCard
+            key={`satellites-mobile-${spaceData.updateId}`}
+            title="Active Satellites"
+            icon="📡"
+            value={(safeAdvancedData.satellites?.total || 8647).toLocaleString()}
+            subtitle={`${(safeAdvancedData.satellites?.starlink || 5000).toLocaleString()} Starlink`}
+            color="#10b981"
+            size="compact"
+          />
+          <QuickStatsCard
+            key={`next-launch-mobile-${spaceData.updateId}`}
+            title="Next Launch"
+            icon="🚀"
+            value={`T-${safeSpaceData.nextLaunch.daysUntil || 0}`}
+            subtitle={safeSpaceData.nextLaunch.name || 'Unknown Mission'}
+            color="#10b981"
+            size="compact"
+          />
+          <QuickStatsCard
+            key={`mars-sol-mobile-${spaceData.updateId}`}
+            title="Mars Sol"
+            icon="🔴"
+            value={`Sol ${(safeSpaceData.mars.sol || 0).toLocaleString()}`}
+            subtitle={`${safeSpaceData.mars.temperature || 0}°C`}
+            color="#f59e0b"
+            size="compact"
+          />
+        </div>
+
+        {/* Mobile: Space Gallery */}
+        <div key={`gallery-mobile-${spaceData.updateId}`}>
+          <SpaceGallery />
+        </div>
+      </div>
+    )
+  }
+
+  // Desktop Layout (768px+) - NO ANIMATIONS
+  return (
+    <div key={`main-view-desktop-${spaceData.updateId}`} style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr',
+      gap: '32px',
+      width: '100%',
+      boxSizing: 'border-box'
+    }}>
+      {/* Desktop: Top Row - Earth Tracker + Quick Stats */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: window.innerWidth < 1200 ? '2fr 1fr' : '3fr 1fr',
+        gap: '32px',
+        alignItems: 'start'
+      }}>
+        {/* Earth Tracker */}
+        <div key={`earth-tracker-desktop-${spaceData.updateId}`}>
+          <EarthTracker issData={safeAdvancedData.iss || safeSpaceData.iss} />
+        </div>
+
+        {/* Desktop: Quick Stats - Vertical Layout */}
+        <div key={`quick-stats-desktop-${spaceData.updateId}`} style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: '16px'
+        }}>
+          <QuickStatsCard
+            key={`iss-status-desktop-${spaceData.updateId}`}
+            title="ISS Status"
+            icon="🛰️"
+            value={safeAdvancedData.iss?.region || safeSpaceData.iss.location}
+            subtitle={`${safeSpaceData.iss.speed} km/h • ${safeAdvancedData.iss?.altitude || safeSpaceData.iss.altitude} km`}
+            color="#3b82f6"
+            size="medium"
+          />
+          <QuickStatsCard
+            key={`crew-count-desktop-${spaceData.updateId}`}
+            title="Crew"
+            icon="👨‍🚀"
+            value={safeSpaceData.peopleInSpace.count.toString()}
+            subtitle="People in Space"
+            color="#8b5cf6"
+            size="medium"
+          />
+        </div>
       </div>
 
-      {/* Middle Row - Live Charts - Fixed container */}
-      <div key={`charts-${spaceData.updateId}`} style={{
-        width: '100%',
-        minWidth: 0,
-        boxSizing: 'border-box'
-      }}>
+      {/* Desktop: Middle Row - Live Charts (Full Width) */}
+      <div key={`charts-desktop-${spaceData.updateId}`}>
         <LiveCharts
           spaceData={safeSpaceData}
           spaceWeather={safeAdvancedData.spaceWeather}
         />
       </div>
 
-      {/* Bottom Row - Data Cards and Gallery - FIXED LAYOUT */}
-      <div key={`bottom-row-${spaceData.updateId}`} style={{
+      {/* Desktop: Bottom Row - Data Cards + Gallery */}
+      <div style={{
         display: 'grid',
-        gridTemplateColumns: window.innerWidth < 768
-          ? '1fr'
-          : window.innerWidth < 1200
-            ? '1fr'
-            : '1.6fr 1fr', // Adjusted ratio for better fit
-        gap: 'clamp(12px, 3vw, 20px)',
-        width: '100%',
-        boxSizing: 'border-box'
+        gridTemplateColumns: window.innerWidth < 1200
+          ? '1fr 1fr'
+          : '2fr 1.8fr',
+        gap: '32px',
+        alignItems: 'start'
       }}>
-        {/* Data Cards Grid - Fixed responsive grid */}
-        <div key={`data-cards-${spaceData.updateId}`} style={{
+        {/* Desktop: Data Cards - 2x2 Grid */}
+        <div key={`data-cards-desktop-${spaceData.updateId}`} style={{
           display: 'grid',
-          gridTemplateColumns: window.innerWidth < 576
-            ? '1fr'
-            : window.innerWidth < 768
-              ? 'repeat(2, 1fr)'
-              : 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 'clamp(8px, 2vw, 14px)',
-          width: '100%',
-          minWidth: 0,
-          boxSizing: 'border-box'
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '16px',
+          alignContent: 'start'
         }}>
-          {/* Space Weather */}
           <QuickStatsCard
-            key={`space-weather-${spaceData.updateId}`}
+            key={`space-weather-desktop-${spaceData.updateId}`}
             title="Space Weather"
             icon="☀️"
             value={safeAdvancedData.spaceWeather?.level || 'Quiet'}
             subtitle={`${safeAdvancedData.spaceWeather?.auroraChance || 0}% Aurora • Kp ${safeAdvancedData.spaceWeather?.kpIndex || '0.0'}`}
             color={safeAdvancedData.spaceWeather?.color || '#f59e0b'}
-            size="medium"
+            size="compact-desktop"
           />
-
-          {/* Satellites */}
           <QuickStatsCard
-            key={`satellites-${spaceData.updateId}`}
+            key={`satellites-desktop-${spaceData.updateId}`}
             title="Active Satellites"
             icon="📡"
             value={(safeAdvancedData.satellites?.total || 8647).toLocaleString()}
-            subtitle={`${(safeAdvancedData.satellites?.starlink || 5000).toLocaleString()} Starlink • ${safeAdvancedData.satellites?.launchesThisYear || 42} launches in 2025`}
+            subtitle={`${(safeAdvancedData.satellites?.starlink || 5000).toLocaleString()} Starlink • ${safeAdvancedData.satellites?.launchesThisYear || 42} launches`}
             color="#10b981"
-            size="medium"
+            size="compact-desktop"
           />
-
           <QuickStatsCard
-            key={`next-launch-${spaceData.updateId}`}
+            key={`next-launch-desktop-${spaceData.updateId}`}
             title="Next Launch"
             icon="🚀"
             value={`T-${safeSpaceData.nextLaunch.daysUntil || 0}`}
             subtitle={safeSpaceData.nextLaunch.name || 'Unknown Mission'}
             color="#10b981"
-            size="medium"
+            size="compact-desktop"
           />
-
           <QuickStatsCard
-            key={`mars-sol-${spaceData.updateId}`}
+            key={`mars-sol-desktop-${spaceData.updateId}`}
             title="Mars Sol"
             icon="🔴"
             value={`Sol ${(safeSpaceData.mars.sol || 0).toLocaleString()}`}
             subtitle={`${safeSpaceData.mars.temperature || 0}°C • Northern Summer`}
             color="#f59e0b"
-            size="medium"
+            size="compact-desktop"
           />
         </div>
 
-        {/* Space Gallery - Fixed container */}
-        <div key={`gallery-${spaceData.updateId}`} style={{
-          width: '100%',
-          minWidth: 0,
-          boxSizing: 'border-box'
+        {/* Desktop: Space Gallery */}
+        <div key={`gallery-desktop-${spaceData.updateId}`} style={{
+          width: '100%'
         }}>
           <SpaceGallery />
         </div>
@@ -326,7 +389,7 @@ const MainEnhancedView = ({ spaceData, advancedData }) => {
   )
 }
 
-// Fixed Responsive Data Error View
+// Data Error View - NO ANIMATIONS
 const DataErrorView = () => {
   return (
     <div key="data-error-view" style={{
@@ -355,7 +418,8 @@ const DataErrorView = () => {
         fontWeight: '700',
         color: '#dc2626',
         marginBottom: 'clamp(0.5rem, 1.5vw, 0.75rem)',
-        lineHeight: '1.2'
+        lineHeight: '1.2',
+        fontFamily: "'Inter', sans-serif"
       }}>
         Data Loading Error
       </h2>
@@ -364,7 +428,8 @@ const DataErrorView = () => {
         color: '#7f1d1d',
         marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
         maxWidth: 'clamp(280px, 80vw, 450px)',
-        lineHeight: '1.5'
+        lineHeight: '1.5',
+        fontFamily: "'Inter', sans-serif"
       }}>
         Space data is temporarily unavailable. The system is attempting to reconnect to space APIs.
       </p>
@@ -379,7 +444,8 @@ const DataErrorView = () => {
           fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
           fontWeight: '600',
           cursor: 'pointer',
-          transition: 'all 0.2s ease'
+          // REMOVED: transition: 'all 0.2s ease',
+          fontFamily: "'Inter', sans-serif"
         }}
       >
         🔄 Reload COSMOS
@@ -387,18 +453,18 @@ const DataErrorView = () => {
       <div style={{
         fontSize: 'clamp(0.625rem, 1.8vw, 0.75rem)',
         color: '#991b1b',
-        fontFamily: 'monospace',
+        fontFamily: "'JetBrains Mono', monospace",
         marginTop: 'clamp(1rem, 3vw, 1.5rem)',
         textAlign: 'center',
         lineHeight: '1.4'
       }}>
-        Fixed responsive layout • ravixalgorithm • 2025-07-02 19:20:26 UTC
+        Animation removed • ravixalgorithm • 2025-07-02 20:54:39 UTC
       </div>
     </div>
   )
 }
 
-// Fixed Enhanced Responsive Quick Stats Card Component
+// FIXED Quick Stats Card Component - NO ANIMATIONS
 const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }) => {
   const safeTitle = title || 'Unknown'
   const safeIcon = icon || '❓'
@@ -408,24 +474,44 @@ const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }
 
   const cardSizes = {
     compact: {
-      padding: 'clamp(8px, 2vw, 12px)',
-      minHeight: 'clamp(80px, 16vw, 100px)',
-      iconSize: 'clamp(20px, 4vw, 28px)',
-      iconFontSize: 'clamp(10px, 2vw, 14px)',
-      titleSize: 'clamp(10px, 2vw, 12px)',
-      valueSize: 'clamp(12px, 2.8vw, 14px)',
-      subtitleSize: 'clamp(8px, 1.6vw, 9px)',
-      borderRadius: 'clamp(8px, 2vw, 12px)'
+      padding: '16px',
+      minHeight: '120px',
+      iconSize: '32px',
+      iconFontSize: '16px',
+      titleSize: '14px',
+      valueSize: '18px',
+      subtitleSize: '12px',
+      borderRadius: '12px'
     },
     medium: {
-      padding: 'clamp(10px, 2.5vw, 14px)',
-      minHeight: 'clamp(100px, 20vw, 130px)',
-      iconSize: 'clamp(24px, 5vw, 32px)',
-      iconFontSize: 'clamp(12px, 2.5vw, 16px)',
-      titleSize: 'clamp(11px, 2.2vw, 13px)',
-      valueSize: 'clamp(14px, 3vw, 16px)',
-      subtitleSize: 'clamp(9px, 1.8vw, 10px)',
-      borderRadius: 'clamp(8px, 2vw, 12px)'
+      padding: '20px',
+      minHeight: '160px',
+      iconSize: '40px',
+      iconFontSize: '20px',
+      titleSize: '16px',
+      valueSize: '24px',
+      subtitleSize: '14px',
+      borderRadius: '16px'
+    },
+    balanced: {
+      padding: '18px',
+      minHeight: '230px',
+      iconSize: '36px',
+      iconFontSize: '18px',
+      titleSize: '15px',
+      valueSize: '22px',
+      subtitleSize: '13px',
+      borderRadius: '16px'
+    },
+    'compact-desktop': {
+      padding: '16px',
+      minHeight: '140px',
+      iconSize: '32px',
+      iconFontSize: '16px',
+      titleSize: '14px',
+      valueSize: '20px',
+      subtitleSize: '12px',
+      borderRadius: '12px'
     }
   }
 
@@ -437,36 +523,42 @@ const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }
       borderRadius: sizing.borderRadius,
       padding: sizing.padding,
       border: '1px solid #e2e8f0',
-      boxShadow: '0 3px 15px rgba(0, 0, 0, 0.06)',
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
       position: 'relative',
       overflow: 'hidden',
       minHeight: sizing.minHeight,
-      transition: 'all 0.3s ease',
+      height: size === 'balanced' ? '100%' : 'auto',
+      // REMOVED: transition: 'all 0.3s ease',
       width: '100%',
       boxSizing: 'border-box',
-      minWidth: 0 // Allow shrinking
-    }}>
+      cursor: 'pointer',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: size === 'compact-desktop' ? 'flex-start' : 'space-between'
+    }}
+    // REMOVED: onMouseEnter and onMouseLeave hover animations
+    >
       <div style={{
         position: 'absolute',
         top: 0,
         right: 0,
-        width: 'clamp(30px, 8vw, 50px)',
-        height: 'clamp(30px, 8vw, 50px)',
-        background: `linear-gradient(135deg, ${safeColor}20, ${safeColor}10)`,
-        borderRadius: `0 ${sizing.borderRadius} 0 clamp(30px, 8vw, 50px)`
+        width: size === 'compact-desktop' ? '60px' : '80px',
+        height: size === 'compact-desktop' ? '60px' : '80px',
+        background: `linear-gradient(135deg, ${safeColor}15, ${safeColor}05)`,
+        borderRadius: `0 ${sizing.borderRadius} 0 ${size === 'compact-desktop' ? '60px' : '80px'}`
       }} />
 
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 'clamp(4px, 1vw, 6px)',
-        marginBottom: 'clamp(4px, 1vw, 8px)'
+        gap: '10px',
+        marginBottom: size === 'compact-desktop' ? '12px' : '16px'
       }}>
         <div style={{
           width: sizing.iconSize,
           height: sizing.iconSize,
           backgroundColor: safeColor,
-          borderRadius: 'clamp(4px, 1vw, 6px)',
+          borderRadius: '8px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -479,23 +571,26 @@ const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }
           fontWeight: '700',
           color: '#1f2937',
           lineHeight: '1.2',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap'
+          fontFamily: "'Inter', sans-serif"
         }}>
           {safeTitle}
         </h4>
       </div>
 
-      <div style={{ marginBottom: 'clamp(3px, 0.8vw, 6px)' }}>
+      <div style={{
+        flex: size === 'compact-desktop' ? 'none' : 1,
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: size === 'compact-desktop' ? 'flex-start' : 'center',
+        marginBottom: size === 'compact-desktop' ? '10px' : '12px'
+      }}>
         <div style={{
           fontSize: sizing.valueSize,
           fontWeight: '800',
           color: safeColor,
           lineHeight: '1.1',
-          marginBottom: 'clamp(1px, 0.3vw, 2px)',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis'
+          marginBottom: '6px',
+          fontFamily: "'Inter', sans-serif"
         }}>
           {safeValue}
         </div>
@@ -505,10 +600,11 @@ const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }
         fontSize: sizing.subtitleSize,
         color: '#64748b',
         lineHeight: '1.3',
+        fontFamily: "'Inter', sans-serif",
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: '-webkit-box',
-        WebkitLineClamp: 2,
+        WebkitLineClamp: size === 'compact-desktop' ? 2 : 3,
         WebkitBoxOrient: 'vertical'
       }}>
         {safeSubtitle}
@@ -517,7 +613,7 @@ const QuickStatsCard = ({ title, icon, value, subtitle, color, size = 'medium' }
   )
 }
 
-// Responsive ISSDetailView
+// Other views remain the same but with NO ANIMATIONS
 const ISSDetailView = ({ spaceData, advancedData }) => {
   if (!spaceData) return <DataErrorView />
 
@@ -527,8 +623,8 @@ const ISSDetailView = ({ spaceData, advancedData }) => {
   return (
     <div key={`iss-detail-${spaceData.updateId}`} style={{
       backgroundColor: 'white',
-      borderRadius: 'clamp(12px, 3vw, 16px)',
-      padding: 'clamp(16px, 4vw, 24px)',
+      borderRadius: '16px',
+      padding: '24px',
       border: '1px solid #e2e8f0',
       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
       width: '100%',
@@ -536,43 +632,44 @@ const ISSDetailView = ({ spaceData, advancedData }) => {
     }}>
       <div style={{
         display: 'flex',
-        flexDirection: window.innerWidth < 480 ? 'column' : 'row',
-        alignItems: window.innerWidth < 480 ? 'flex-start' : 'center',
-        gap: 'clamp(8px, 2vw, 12px)',
-        marginBottom: 'clamp(16px, 4vw, 20px)'
+        alignItems: 'center',
+        gap: '12px',
+        marginBottom: '20px'
       }}>
         <div style={{
-          width: 'clamp(40px, 8vw, 48px)',
-          height: 'clamp(40px, 8vw, 48px)',
+          width: '48px',
+          height: '48px',
           backgroundColor: '#3b82f6',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 'clamp(20px, 4vw, 24px)',
+          fontSize: '24px',
           flexShrink: 0
         }}>
           🛰️
         </div>
         <div style={{ flex: 1 }}>
           <h2 style={{
-            fontSize: 'clamp(20px, 5vw, 24px)',
+            fontSize: '24px',
             fontWeight: '700',
             color: '#1f2937',
             margin: 0,
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            fontFamily: "'Inter', sans-serif"
           }}>
             ISS Live Tracking
           </h2>
           <div style={{
-            padding: 'clamp(3px, 1vw, 4px) clamp(6px, 1.5vw, 8px)',
+            padding: '4px 8px',
             backgroundColor: '#10b981',
             color: 'white',
-            borderRadius: 'clamp(4px, 1vw, 6px)',
-            fontSize: 'clamp(9px, 2vw, 11px)',
+            borderRadius: '6px',
+            fontSize: '11px',
             fontWeight: '600',
             display: 'inline-block',
-            marginTop: 'clamp(3px, 1vw, 4px)'
+            marginTop: '4px',
+            fontFamily: "'Inter', sans-serif"
           }}>
             LIVE
           </div>
@@ -581,146 +678,149 @@ const ISSDetailView = ({ spaceData, advancedData }) => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: window.innerWidth < 640
-          ? '1fr'
-          : window.innerWidth < 1024
-            ? 'repeat(2, 1fr)'
-            : 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 'clamp(12px, 3vw, 20px)',
-        marginBottom: 'clamp(16px, 4vw, 24px)'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '20px',
+        marginBottom: '24px'
       }}>
         <div style={{
-          padding: 'clamp(12px, 3vw, 16px)',
+          padding: '16px',
           backgroundColor: '#f8fafc',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           border: '1px solid #e2e8f0'
         }}>
           <h4 style={{
-            fontSize: 'clamp(10px, 2vw, 12px)',
+            fontSize: '12px',
             fontWeight: '600',
             color: '#64748b',
-            marginBottom: 'clamp(6px, 1.5vw, 8px)',
+            marginBottom: '8px',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            fontFamily: "'Inter', sans-serif"
           }}>
             CURRENT LOCATION
           </h4>
           <div style={{
-            fontSize: 'clamp(16px, 4vw, 20px)',
+            fontSize: '20px',
             fontWeight: '700',
             color: '#1f2937',
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            fontFamily: "'Inter', sans-serif"
           }}>
             {safeIssData.location}
           </div>
         </div>
 
         <div style={{
-          padding: 'clamp(12px, 3vw, 16px)',
+          padding: '16px',
           backgroundColor: '#f8fafc',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           border: '1px solid #e2e8f0'
         }}>
           <h4 style={{
-            fontSize: 'clamp(10px, 2vw, 12px)',
+            fontSize: '12px',
             fontWeight: '600',
             color: '#64748b',
-            marginBottom: 'clamp(6px, 1.5vw, 8px)',
+            marginBottom: '8px',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            fontFamily: "'Inter', sans-serif"
           }}>
             ORBITAL SPEED
           </h4>
           <div style={{
-            fontSize: 'clamp(16px, 4vw, 20px)',
+            fontSize: '20px',
             fontWeight: '700',
             color: '#1f2937',
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            fontFamily: "'JetBrains Mono', monospace"
           }}>
             {safeIssData.speed} km/h
           </div>
         </div>
 
         <div style={{
-          padding: 'clamp(12px, 3vw, 16px)',
+          padding: '16px',
           backgroundColor: '#f8fafc',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           border: '1px solid #e2e8f0'
         }}>
           <h4 style={{
-            fontSize: 'clamp(10px, 2vw, 12px)',
+            fontSize: '12px',
             fontWeight: '600',
             color: '#64748b',
-            marginBottom: 'clamp(6px, 1.5vw, 8px)',
+            marginBottom: '8px',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            fontFamily: "'Inter', sans-serif"
           }}>
             ALTITUDE
           </h4>
           <div style={{
-            fontSize: 'clamp(16px, 4vw, 20px)',
+            fontSize: '20px',
             fontWeight: '700',
             color: '#1f2937',
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            fontFamily: "'JetBrains Mono', monospace"
           }}>
             {safeIssData.altitude} km
           </div>
         </div>
 
         <div style={{
-          padding: 'clamp(12px, 3vw, 16px)',
+          padding: '16px',
           backgroundColor: '#f8fafc',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           border: '1px solid #e2e8f0'
         }}>
           <h4 style={{
-            fontSize: 'clamp(10px, 2vw, 12px)',
+            fontSize: '12px',
             fontWeight: '600',
             color: '#64748b',
-            marginBottom: 'clamp(6px, 1.5vw, 8px)',
+            marginBottom: '8px',
             textTransform: 'uppercase',
-            letterSpacing: '0.5px'
+            letterSpacing: '0.5px',
+            fontFamily: "'Inter', sans-serif"
           }}>
             CREW ON BOARD
           </h4>
           <div style={{
-            fontSize: 'clamp(16px, 4vw, 20px)',
+            fontSize: '20px',
             fontWeight: '700',
             color: '#1f2937',
-            lineHeight: '1.2'
+            lineHeight: '1.2',
+            fontFamily: "'JetBrains Mono', monospace"
           }}>
             {spaceData.crewData?.count || 7} people
           </div>
         </div>
       </div>
 
-      {/* ISS Facts - Responsive */}
       <div style={{
         backgroundColor: '#f0f9ff',
-        borderRadius: 'clamp(8px, 2vw, 12px)',
-        padding: 'clamp(16px, 4vw, 20px)',
+        borderRadius: '12px',
+        padding: '20px',
         border: '1px solid #0ea5e9'
       }}>
         <h4 style={{
-          fontSize: 'clamp(14px, 3vw, 16px)',
+          fontSize: '16px',
           fontWeight: '600',
-          marginBottom: 'clamp(10px, 2.5vw, 12px)',
+          marginBottom: '12px',
           display: 'flex',
           alignItems: 'center',
-          gap: 'clamp(6px, 1.5vw, 8px)',
-          color: '#0369a1'
+          gap: '8px',
+          color: '#0369a1',
+          fontFamily: "'Inter', sans-serif"
         }}>
           📊 ISS Quick Facts
         </h4>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: window.innerWidth < 640
-            ? '1fr'
-            : 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 'clamp(8px, 2vw, 12px)',
-          fontSize: 'clamp(11px, 2.5vw, 13px)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: '12px',
+          fontSize: '13px',
           lineHeight: '1.5',
-          color: '#0369a1'
+          color: '#0369a1',
+          fontFamily: "'Inter', sans-serif"
         }}>
           <div>• Orbits Earth every ~93 minutes</div>
           <div>• Travels 17,500 mph (28,000 km/h)</div>
@@ -734,7 +834,6 @@ const ISSDetailView = ({ spaceData, advancedData }) => {
   )
 }
 
-// Responsive SpaceWeatherView
 const SpaceWeatherView = ({ advancedData }) => {
   const weatherData = advancedData.weatherAdvanced || {
     level: 'Quiet',
@@ -746,8 +845,8 @@ const SpaceWeatherView = ({ advancedData }) => {
   return (
     <div key={`weather-view-${Date.now()}`} style={{
       backgroundColor: 'white',
-      borderRadius: 'clamp(12px, 3vw, 16px)',
-      padding: 'clamp(16px, 4vw, 24px)',
+      borderRadius: '16px',
+      padding: '24px',
       border: '1px solid #e2e8f0',
       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
       width: '100%',
@@ -755,30 +854,30 @@ const SpaceWeatherView = ({ advancedData }) => {
     }}>
       <div style={{
         display: 'flex',
-        flexDirection: window.innerWidth < 480 ? 'column' : 'row',
-        alignItems: window.innerWidth < 480 ? 'flex-start' : 'center',
-        gap: 'clamp(8px, 2vw, 12px)',
-        marginBottom: 'clamp(16px, 4vw, 20px)'
+        alignItems: 'center',
+        gap: '12px',
+        marginBottom: '20px'
       }}>
         <div style={{
-          width: 'clamp(40px, 8vw, 48px)',
-          height: 'clamp(40px, 8vw, 48px)',
+          width: '48px',
+          height: '48px',
           backgroundColor: '#f59e0b',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 'clamp(20px, 4vw, 24px)',
+          fontSize: '24px',
           flexShrink: 0
         }}>
           ☀️
         </div>
         <h2 style={{
-          fontSize: 'clamp(20px, 5vw, 24px)',
+          fontSize: '24px',
           fontWeight: '700',
           color: '#1f2937',
           margin: 0,
-          lineHeight: '1.2'
+          lineHeight: '1.2',
+          fontFamily: "'Inter', sans-serif"
         }}>
           Space Weather Monitor
         </h2>
@@ -786,13 +885,8 @@ const SpaceWeatherView = ({ advancedData }) => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: window.innerWidth < 640
-          ? '1fr'
-          : window.innerWidth < 1024
-            ? 'repeat(2, 1fr)'
-            : 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 'clamp(10px, 2.5vw, 16px)',
-        marginBottom: 'clamp(16px, 4vw, 20px)'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px'
       }}>
         <QuickStatsCard
           title="Activity Level"
@@ -834,7 +928,6 @@ const SpaceWeatherView = ({ advancedData }) => {
   )
 }
 
-// Responsive SatellitesView
 const SatellitesView = ({ advancedData }) => {
   const satelliteData = advancedData.satelliteAdvanced || {
     total: 8647,
@@ -846,8 +939,8 @@ const SatellitesView = ({ advancedData }) => {
   return (
     <div key={`satellites-view-${Date.now()}`} style={{
       backgroundColor: 'white',
-      borderRadius: 'clamp(12px, 3vw, 16px)',
-      padding: 'clamp(16px, 4vw, 24px)',
+      borderRadius: '16px',
+      padding: '24px',
       border: '1px solid #e2e8f0',
       boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
       width: '100%',
@@ -855,30 +948,30 @@ const SatellitesView = ({ advancedData }) => {
     }}>
       <div style={{
         display: 'flex',
-        flexDirection: window.innerWidth < 480 ? 'column' : 'row',
-        alignItems: window.innerWidth < 480 ? 'flex-start' : 'center',
-        gap: 'clamp(8px, 2vw, 12px)',
-        marginBottom: 'clamp(16px, 4vw, 20px)'
+        alignItems: 'center',
+        gap: '12px',
+        marginBottom: '20px'
       }}>
         <div style={{
-          width: 'clamp(40px, 8vw, 48px)',
-          height: 'clamp(40px, 8vw, 48px)',
+          width: '48px',
+          height: '48px',
           backgroundColor: '#10b981',
-          borderRadius: 'clamp(8px, 2vw, 12px)',
+          borderRadius: '12px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 'clamp(20px, 4vw, 24px)',
+          fontSize: '24px',
           flexShrink: 0
         }}>
           📡
         </div>
         <h2 style={{
-          fontSize: 'clamp(20px, 5vw, 24px)',
+          fontSize: '24px',
           fontWeight: '700',
           color: '#1f2937',
           margin: 0,
-          lineHeight: '1.2'
+          lineHeight: '1.2',
+          fontFamily: "'Inter', sans-serif"
         }}>
           Global Satellite Network
         </h2>
@@ -886,12 +979,8 @@ const SatellitesView = ({ advancedData }) => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: window.innerWidth < 640
-          ? '1fr'
-          : window.innerWidth < 1024
-            ? 'repeat(2, 1fr)'
-            : 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: 'clamp(10px, 2.5vw, 16px)'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px'
       }}>
         <QuickStatsCard
           title="Active Satellites"

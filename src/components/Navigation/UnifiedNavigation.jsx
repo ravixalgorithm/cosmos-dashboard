@@ -283,7 +283,7 @@ const UnifiedNavigation = ({ activeSection, setActiveSection }) => {
             <div style={{
               fontSize: 'clamp(11px, 2.2vw, 12px)',
               color: '#64748b',
-              fontFamily: 'monospace',
+              fontFamily: 'JetBrains Mono',
               textAlign: 'center',
               lineHeight: '1.6'
             }}>

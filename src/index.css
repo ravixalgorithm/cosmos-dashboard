@@ -1,58 +1,395 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap');
-@import "tailwindcss";
+/* COSMOS Dashboard - Global Styles - ANIMATION FIXED */
+/* Author: ravixalgorithm | Updated: 2025-07-02 20:44:37 UTC */
 
-* {
+/* Import Premium Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
+
+/* CSS Reset and Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  /* REMOVED: font-family: 'JetBrains Mono'; - This was causing issues */
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  background-color: white;
-  overflow-x: hidden;
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f8fafc;
+  color: #1f2937;
+  overflow-x: hidden;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  /* ADDED: Disable all animations by default */
+  animation: none !important;
+  transition: none !important;
 }
 
-/* Pulse animation for live indicator */
+/* Typography Scale */
+.text-xs { font-size: clamp(0.75rem, 2vw, 0.75rem); }
+.text-sm { font-size: clamp(0.875rem, 2.2vw, 0.875rem); }
+.text-base { font-size: clamp(1rem, 2.5vw, 1rem); }
+.text-lg { font-size: clamp(1.125rem, 2.8vw, 1.125rem); }
+.text-xl { font-size: clamp(1.25rem, 3.2vw, 1.25rem); }
+.text-2xl { font-size: clamp(1.5rem, 3.8vw, 1.5rem); }
+.text-3xl { font-size: clamp(1.875rem, 4.7vw, 1.875rem); }
+.text-4xl { font-size: clamp(2.25rem, 5.6vw, 2.25rem); }
+
+/* Font Weights */
+.font-light { font-weight: 300; }
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-extrabold { font-weight: 800; }
+.font-black { font-weight: 900; }
+
+/* Monospace font for data/code */
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+}
+
+/* Responsive base font size */
+html {
+  font-size: clamp(14px, 2.5vw, 16px);
+}
+
+/* Enhanced Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: clamp(2.25rem, 5.6vw, 3rem); font-weight: 800; }
+h2 { font-size: clamp(1.875rem, 4.7vw, 2.25rem); font-weight: 700; }
+h3 { font-size: clamp(1.5rem, 3.8vw, 1.875rem); font-weight: 600; }
+h4 { font-size: clamp(1.25rem, 3.2vw, 1.5rem); font-weight: 600; }
+h5 { font-size: clamp(1.125rem, 2.8vw, 1.25rem); font-weight: 500; }
+h6 { font-size: clamp(1rem, 2.5vw, 1.125rem); font-weight: 500; }
+
+/* Body text optimization */
+p {
+  line-height: 1.6;
+  font-weight: 400;
+  color: #4b5563;
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling - CONTROLLED */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Image optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Button reset with better typography */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Link styles */
+a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* List styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Table styles */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Form elements */
+input, textarea, select {
+  font-family: 'Inter', sans-serif;
+  font-size: inherit;
+  font-weight: 400;
+}
+
+/* Code styles */
+code {
+  font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Selection styles */
+::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+::-moz-selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid;
+  }
+}
+
+/* Enhanced reduced motion support - FIXED */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* DISABLE ALL ANIMATIONS GLOBALLY - EMERGENCY FIX */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+    font-family: 'Inter', sans-serif;
+  }
+
+  button,
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* CONTROLLED animations - Only enable specific ones */
+.loading {
+  animation: pulse 2s infinite;
+}
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
-    transform: scale(1);
   }
   50% {
     opacity: 0.5;
-    transform: scale(1.1);
   }
 }
 
-/* Space data cube animations */
-@keyframes float-0 {
-  0%, 100% { transform: rotate(15deg) translateY(0px); }
-  50% { transform: rotate(15deg) translateY(-15px); }
+/* COSMOS Dashboard specific styles */
+.cosmos-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-@keyframes float-1 {
-  0%, 100% { transform: rotate(-20deg) translateY(0px); }
-  50% { transform: rotate(-20deg) translateY(-12px); }
+/* Typography utilities for COSMOS theme */
+.cosmos-title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  /* REMOVED ANIMATION: background: linear-gradient with animation */
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* NO ANIMATION */
 }
 
-@keyframes float-2 {
-  0%, 100% { transform: rotate(25deg) translateY(0px); }
-  50% { transform: rotate(25deg) translateY(-18px); }
+.cosmos-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #1f2937;
 }
 
-@keyframes float-3 {
-  0%, 100% { transform: rotate(-15deg) translateY(0px); }
-  50% { transform: rotate(-15deg) translateY(-14px); }
+.cosmos-body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #4b5563;
 }
 
-/* Smooth transitions */
-button {
-  transition: all 0.2s ease;
+.cosmos-caption {
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.75rem, 2vw, 0.875rem);
+  color: #6b7280;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
 }
 
-button:hover {
+.cosmos-data {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-feature-settings: 'tnum' 1;
+  color: #1f2937;
+}
+
+/* Responsive grid helpers */
+.responsive-grid {
+  display: grid;
+  gap: clamp(16px, 4vw, 24px);
+}
+
+.responsive-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.responsive-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.responsive-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Touch-friendly interactive elements */
+@media (pointer: coarse) {
+  button,
+  .interactive {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Enhanced button typography */
+.cosmos-button {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: clamp(0.875rem, 2.2vw, 1rem);
+}
+
+/* CONTROLLED Space-themed text effects - NO ANIMATION */
+.text-glow {
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.text-space-gradient {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* REMOVED: background-size and animation */
+}
+
+/* REMOVED: @keyframes gradient-shift - This was causing the awful animation */
+
+/* Number formatting for data display */
+.tabular-nums {
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Improved readability on light backgrounds */
+.text-high-contrast {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* ENABLE ONLY SPECIFIC SAFE ANIMATIONS */
+.safe-hover-animation {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.safe-hover-animation:hover {
+  transform: translateY(-2px);
+}
+
+/* Loading spinner - CONTROLLED */
+.cosmos-spinner {
+  animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Button hover - CONTROLLED */
+.cosmos-button-hover {
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
+}
+
+.cosmos-button-hover:hover {
   transform: translateY(-1px);
 }
