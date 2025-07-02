@@ -17,7 +17,7 @@ A real-time space data visualization dashboard built with React and Vite.
 
 ## 🚀 Live Demo
 
-Visit the live dashboard: [COSMOS Dashboard](https://your-app-name.vercel.app)
+Visit the live dashboard: [COSMOS Dashboard](https://cosmos-dashboard.vercel.app/)
 
 ## 🛠️ Technology Stack
 
@@ -26,14 +26,6 @@ Visit the live dashboard: [COSMOS Dashboard](https://your-app-name.vercel.app)
 - **Data**: Space APIs integration
 - **Deployment**: Vercel
 - **Performance**: Optimized for mobile and desktop
-
-## 📱 Screenshots
-
-### Desktop View
-![Desktop Dashboard](https://via.placeholder.com/800x600/0f172a/white?text=Desktop+View)
-
-### Mobile View
-![Mobile Dashboard](https://via.placeholder.com/400x800/0f172a/white?text=Mobile+View)
 
 ## 🏃‍♂️ Quick Start
 
