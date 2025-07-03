@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import NavigationManager from './components/Navigation/NavigationManager' // NEW: Hybrid navigation
 import SpaceHeroSection from './components/Hero/SpaceHeroSection'
-import ImprovedSimpleDashboard from './components/Dashboard/ImprovedSimpleDashboard'
 import UltimateDashboard from './components/Dashboard/UltimateSpaceDashboard'
 import EnhancedStatusBar from './components/Dashboard/EnhancedStatusBar'
 import DocumentationPortal from './components/Documentation/DocumentationPortal'
@@ -127,16 +126,8 @@ function App() {
                 </div>
               </div>
             )}
+              <UltimateDashboard/>
 
-            {/* Dynamic Dashboard Content */}
-            {useEnhancedMode ? (
-              <UltimateDashboard
-                activeSection={activeSection}
-                onFallback={() => setUseEnhancedMode(false)}
-              />
-            ) : (
-              <ImprovedSimpleDashboard activeSection={activeSection} />
-            )}
           </div>
         )
     }

@@ -1,12 +1,81 @@
 import React from 'react'
 
 const EnhancedStatusBar = ({
-  useEnhancedMode,
-  setUseEnhancedMode,
   lastUpdated,
   currentTime,
-  loading
+  loading,
+  spaceData,
+  dataQuality,
+  errors,
+  onRefresh
 }) => {
+
+  // FIXED: Safe date formatting function
+  const formatLastUpdated = (timestamp) => {
+    if (!timestamp) return 'Never'
+
+    try {
+      // Handle both string and number timestamps
+      let date
+
+      if (typeof timestamp === 'string') {
+        date = new Date(timestamp)
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp)
+      } else if (timestamp instanceof Date) {
+        date = timestamp
+      } else {
+        console.warn('⚠️ Unknown timestamp type in EnhancedStatusBar:', typeof timestamp, timestamp)
+        return 'Invalid format'
+      }
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('⚠️ Invalid date in EnhancedStatusBar:', timestamp)
+        return 'Invalid date'
+      }
+
+      return date.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
+    } catch (error) {
+      console.error('🚨 Date formatting error in EnhancedStatusBar:', error, 'Timestamp:', timestamp)
+      return 'Format error'
+    }
+  }
+
+  // FIXED: Safe current time formatting
+  const formatCurrentTime = (time) => {
+    if (!time) return new Date().toLocaleTimeString()
+
+    try {
+      let date
+
+      if (typeof time === 'string') {
+        date = new Date(time)
+      } else if (typeof time === 'number') {
+        date = new Date(time)
+      } else if (time instanceof Date) {
+        date = time
+      } else {
+        date = new Date()
+      }
+
+      if (isNaN(date.getTime())) {
+        date = new Date()
+      }
+
+      return window.innerWidth < 480
+        ? date.toLocaleTimeString()
+        : date.toUTCString()
+    } catch (error) {
+      console.error('🚨 Current time formatting error:', error)
+      return new Date().toLocaleTimeString()
+    }
+  }
+
   return (
     <div style={{
       maxWidth: '1400px',
@@ -71,21 +140,18 @@ const EnhancedStatusBar = ({
           COSMOS Space Dashboard
         </span>
 
-        {/* Timestamp */}
+        {/* Timestamp - FIXED */}
         <span style={{
           fontSize: 'clamp(11px, 2.5vw, 14px)',
           color: '#64748b',
-          fontFamily: 'monospace',
+          fontFamily: "'JetBrains Mono', monospace",
           backgroundColor: '#f1f5f9',
           padding: 'clamp(4px, 1.5vw, 6px) clamp(8px, 2vw, 12px)',
           borderRadius: 'clamp(6px, 1.5vw, 8px)',
           wordBreak: 'break-all',
           lineHeight: '1.2'
         }}>
-          {window.innerWidth < 480
-            ? currentTime.toLocaleTimeString()
-            : currentTime.toUTCString()
-          }
+          {formatCurrentTime(currentTime)}
         </span>
       </div>
 
@@ -97,7 +163,7 @@ const EnhancedStatusBar = ({
         gap: window.innerWidth < 640 ? 'clamp(12px, 3vw, 16px)' : 'clamp(16px, 4vw, 20px)',
         width: window.innerWidth < 768 ? '100%' : 'auto'
       }}>
-        {/* Last Updated Info */}
+        {/* Last Updated Info - FIXED */}
         <div style={{
           fontSize: 'clamp(12px, 2.5vw, 14px)',
           color: '#64748b',
@@ -107,89 +173,84 @@ const EnhancedStatusBar = ({
           justifyContent: window.innerWidth < 640 ? 'space-between' : 'flex-start'
         }}>
           <span>Last updated:</span>
-          <span style={{ fontWeight: '600' }}>
-            {lastUpdated ? lastUpdated.toLocaleTimeString() : 'Never'}
-          </span>
-        </div>
-
-        {/* Enhanced Mode Toggle */}
-        <div style={{
-          display: 'flex',
-          flexDirection: window.innerWidth < 480 ? 'column' : 'row',
-          alignItems: window.innerWidth < 480 ? 'stretch' : 'center',
-          gap: window.innerWidth < 480 ? 'clamp(8px, 2vw, 12px)' : 'clamp(10px, 2.5vw, 12px)'
-        }}>
           <span style={{
-            fontSize: 'clamp(12px, 2.5vw, 14px)',
-            color: '#64748b',
             fontWeight: '600',
-            textAlign: window.innerWidth < 480 ? 'left' : 'center'
+            fontFamily: "'JetBrains Mono', monospace",
+            fontSize: 'clamp(11px, 2.2vw, 13px)'
           }}>
-            View Mode:
+            {formatLastUpdated(lastUpdated)}
           </span>
-
-          <div style={{
-            position: 'relative',
-            display: 'flex',
-            backgroundColor: '#f1f5f9',
-            borderRadius: 'clamp(8px, 2vw, 12px)',
-            padding: 'clamp(2px, 0.5vw, 4px)',
-            border: '1px solid #e2e8f0',
-            width: window.innerWidth < 480 ? '100%' : 'auto'
-          }}>
-            <button
-              onClick={() => setUseEnhancedMode(false)}
-              style={{
-                padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px)',
-                backgroundColor: !useEnhancedMode ? 'white' : 'transparent',
-                color: !useEnhancedMode ? '#1f2937' : '#64748b',
-                border: 'none',
-                borderRadius: 'clamp(6px, 1.5vw, 8px)',
-                fontSize: 'clamp(12px, 2.5vw, 14px)',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'clamp(6px, 1.5vw, 8px)',
-                boxShadow: !useEnhancedMode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
-                zIndex: 1,
-                flex: window.innerWidth < 480 ? 1 : 'none',
-                minHeight: 'clamp(36px, 8vw, 44px)'
-              }}
-            >
-              <span style={{ fontSize: 'clamp(12px, 2.5vw, 14px)' }}>📊</span>
-              <span>Simple</span>
-            </button>
-
-            <button
-              onClick={() => setUseEnhancedMode(true)}
-              style={{
-                padding: 'clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px)',
-                backgroundColor: useEnhancedMode ? 'white' : 'transparent',
-                color: useEnhancedMode ? '#3b82f6' : '#64748b',
-                border: 'none',
-                borderRadius: 'clamp(6px, 1.5vw, 8px)',
-                fontSize: 'clamp(12px, 2.5vw, 14px)',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'clamp(6px, 1.5vw, 8px)',
-                boxShadow: useEnhancedMode ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
-                zIndex: 1,
-                flex: window.innerWidth < 480 ? 1 : 'none',
-                minHeight: 'clamp(36px, 8vw, 44px)'
-              }}
-            >
-              <span style={{ fontSize: 'clamp(12px, 2.5vw, 14px)' }}>🚀</span>
-              <span>Enhanced</span>
-            </button>
-          </div>
         </div>
+
+        {/* Data Quality Indicator - ADDED */}
+        {dataQuality && (
+          <div style={{
+            fontSize: 'clamp(11px, 2.2vw, 13px)',
+            color: '#64748b',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '4px 8px',
+            backgroundColor: '#f8fafc',
+            borderRadius: '6px',
+            border: '1px solid #e2e8f0'
+          }}>
+            <span style={{
+              color: dataQuality === 'HIGH' ? '#10b981' : dataQuality === 'MEDIUM' ? '#f59e0b' : '#dc2626'
+            }}>
+              {dataQuality === 'HIGH' ? '🟢' : dataQuality === 'MEDIUM' ? '🟡' : '🔴'}
+            </span>
+            <span style={{ fontSize: '10px', fontWeight: '600' }}>
+              {dataQuality}
+            </span>
+          </div>
+        )}
+
+
+        {/* Refresh Button - ADDED */}
+        {onRefresh && (
+          <button
+            onClick={onRefresh}
+            disabled={loading}
+            style={{
+              backgroundColor: loading ? '#f1f5f9' : 'white',
+              border: '1px solid #e2e8f0',
+              borderRadius: 'clamp(6px, 1.5vw, 8px)',
+              padding: 'clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              fontSize: 'clamp(11px, 2.2vw, 13px)',
+              color: loading ? '#94a3b8' : '#64748b',
+              fontWeight: '500',
+              transition: 'all 0.2s',
+              fontFamily: "'Inter', sans-serif",
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+            onMouseEnter={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = '#f8fafc'
+                e.target.style.borderColor = '#cbd5e1'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!loading) {
+                e.target.style.backgroundColor = 'white'
+                e.target.style.borderColor = '#e2e8f0'
+              }
+            }}
+          >
+            <span style={{
+              animation: loading ? 'spin 1s linear infinite' : 'none',
+              fontSize: 'clamp(10px, 2vw, 12px)'
+            }}>
+              🔄
+            </span>
+            {window.innerWidth >= 640 && (
+              <span>{loading ? 'Syncing...' : 'Refresh'}</span>
+            )}
+          </button>
+        )}
 
         {/* User Badge */}
         <div style={{
@@ -202,17 +263,57 @@ const EnhancedStatusBar = ({
           border: '1px solid #93c5fd',
           textAlign: 'center',
           alignSelf: window.innerWidth < 640 ? 'center' : 'auto',
-          minWidth: window.innerWidth < 480 ? 'auto' : 'fit-content'
+          minWidth: window.innerWidth < 480 ? 'auto' : 'fit-content',
+          fontFamily: "'JetBrains Mono', monospace"
         }}>
           ravixalgorithm
         </div>
       </div>
+
+      {/* Error Messages (if any) - ADDED */}
+      {errors && errors.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          marginTop: '8px',
+          padding: '6px 12px',
+          backgroundColor: '#fef2f2',
+          borderRadius: '6px',
+          border: '1px solid #fecaca',
+          zIndex: 10
+        }}>
+          <div style={{
+            fontSize: '10px',
+            color: '#dc2626',
+            fontWeight: '600',
+            marginBottom: '2px'
+          }}>
+            Data Issues:
+          </div>
+          {errors.slice(0, 1).map((error, index) => (
+            <div key={index} style={{
+              fontSize: '10px',
+              color: '#7f1d1d',
+              lineHeight: '1.3'
+            }}>
+              • {error}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Enhanced CSS Animations */}
       <style jsx>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
 
         /* Mobile-specific styles */

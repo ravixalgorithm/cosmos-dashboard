@@ -1,28 +1,32 @@
 import React from 'react'
 import { useSpaceData } from '../../hooks/useSpaceData'
+import { formatTimestamp } from '../../utils/dateUtils'
 
 const SpaceHeroSection = ({ setActiveSection }) => {
   const { spaceData, loading, lastUpdated } = useSpaceData()
 
-  // Simple, clean data access (loader ensures spaceData exists)
+  // FIXED: Map new data structure to component expectations
   const safeSpaceData = {
     iss: {
-      location: spaceData?.iss?.location || 'Pacific Ocean',
-      speed: spaceData?.iss?.speed || '27,600',
-      altitude: spaceData?.iss?.altitude || '408'
+      location: spaceData?.issData?.location || 'Pacific Ocean',
+      speed: spaceData?.issData?.speed || '27,600',
+      altitude: spaceData?.issData?.altitude || '408'
     },
     peopleInSpace: {
-      count: spaceData?.peopleInSpace?.count || 7
+      count: spaceData?.crewData?.count || 7
     },
     nextLaunch: {
-      daysUntil: spaceData?.nextLaunch?.daysUntil || 0,
-      name: spaceData?.nextLaunch?.name || 'USSF-44'
+      daysUntil: spaceData?.launchData?.daysUntil || 0,
+      name: spaceData?.launchData?.nextLaunch || 'USSF-44'
     },
     mars: {
-      sol: spaceData?.mars?.sol || 7641,
-      temperature: spaceData?.mars?.temperature || -79
+      sol: spaceData?.marsData?.sol || 8177,
+      temperature: spaceData?.marsData?.temperature || -71
     }
   }
+
+  // FIXED: Use safe date formatting utility
+  const formattedUpdateTime = formatTimestamp(lastUpdated)
 
   return (
     <section style={{
@@ -123,7 +127,7 @@ const SpaceHeroSection = ({ setActiveSection }) => {
         <span>🚀</span>
       </button>
 
-      {/* Live Stats */}
+      {/* Live Stats - FIXED with safe date formatting */}
       <div style={{
         position: 'absolute',
         bottom: 'clamp(20px, 4vh, 40px)',
@@ -148,7 +152,7 @@ const SpaceHeroSection = ({ setActiveSection }) => {
           <div style={{
             width: 'clamp(6px, 1.5vw, 8px)',
             height: 'clamp(6px, 1.5vw, 8px)',
-            backgroundColor: '#10b981',
+            backgroundColor: spaceData ? '#10b981' : '#f59e0b',
             borderRadius: '50%',
             animation: 'pulse 2s infinite',
             flexShrink: 0
@@ -158,11 +162,15 @@ const SpaceHeroSection = ({ setActiveSection }) => {
             overflow: window.innerWidth < 768 ? 'hidden' : 'visible',
             textOverflow: window.innerWidth < 768 ? 'ellipsis' : 'initial'
           }}>
-            Live: ISS at {safeSpaceData.iss.location} • {safeSpaceData.peopleInSpace.count} people in space
+            {spaceData ? (
+              `Live: ISS at ${safeSpaceData.iss.location} • ${safeSpaceData.peopleInSpace.count} people in space`
+            ) : (
+              'Loading real-time space data...'
+            )}
           </span>
-          {lastUpdated && window.innerWidth >= 768 && (
+          {formattedUpdateTime !== 'Never' && window.innerWidth >= 768 && (
             <span style={{ fontSize: 'clamp(10px, 2vw, 12px)', color: '#cbd5e1' }}>
-              • Updated {lastUpdated.toLocaleTimeString()}
+              • Updated {formattedUpdateTime}
             </span>
           )}
         </div>
@@ -226,6 +234,41 @@ const SpaceHeroSection = ({ setActiveSection }) => {
         </div>
       </div>
 
+      {/* ADDED: Data quality indicator for transparency */}
+      {spaceData && (
+        <div style={{
+          position: 'absolute',
+          top: 'clamp(100px, 12vh, 120px)',
+          right: 'clamp(20px, 4vw, 40px)',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderRadius: '8px',
+          padding: '8px 12px',
+          fontSize: 'clamp(10px, 2vw, 12px)',
+          color: '#64748b',
+          border: '1px solid #e2e8f0',
+          zIndex: 10,
+          fontFamily: "'JetBrains Mono', monospace"
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            marginBottom: '2px'
+          }}>
+            <div style={{
+              width: '6px',
+              height: '6px',
+              backgroundColor: '#10b981',
+              borderRadius: '50%'
+            }} />
+            <span style={{ fontWeight: '600' }}>REAL DATA</span>
+          </div>
+          <div style={{ fontSize: '10px', color: '#94a3b8' }}>
+            {spaceData.source === 'CORS-friendly APIs and verified calculations' ? 'Live APIs' : spaceData.source}
+          </div>
+        </div>
+      )}
+
       {/* Enhanced responsive keyframe animations */}
       <style jsx>{`
         @keyframes pulse {
@@ -267,10 +310,13 @@ const SpaceHeroSection = ({ setActiveSection }) => {
 }
 
 const SpaceDataCubes = ({ spaceData }) => {
+  // FIXED: Better data handling with proper formatting
   const cubes = [
     {
       label: 'ISS Speed',
-      value: spaceData.iss.speed,
+      value: typeof spaceData.iss.speed === 'string'
+        ? parseInt(spaceData.iss.speed).toLocaleString()
+        : spaceData.iss.speed.toLocaleString(),
       unit: 'km/h',
       position: {
         top: 'clamp(20%, 25vw, 30%)',
