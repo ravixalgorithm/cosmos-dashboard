@@ -225,10 +225,9 @@ git push origin feature/mission-enhancement
 ## 👨‍🚀 **About the Creator**
 
 **Built by [Ravi Pratap Singh](https://github.com/ravixalgorithm)** (Mr. Algorithm)
-- 🎓 Computer Science Student specializing in distributed systems
+- 🎓 Computer Science Student specialising in distributed systems
 - 🚀 Space technology enthusiast and real-time systems engineer  
 - 💻 Open source contributor with 42+ repositories
-- 📊 Portfolio: [ravixalgorithm.me](https://ravixalgorithm.me)
 - 📧 Contact: Available for collaboration and opportunities
 
 ---
